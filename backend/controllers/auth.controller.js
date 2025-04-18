@@ -2,8 +2,8 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
 
 // Générer un JWT
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+const generateToken = (user) => {
+  return jwt.sign({ id: user._id,  role: user.role}, process.env.JWT_SECRET, {
     expiresIn: '30d',
   });
 };
@@ -23,7 +23,7 @@ const login = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        token: generateToken(user._id),
+        token: generateToken(user),
       });
     } else {
       res.status(401).json({ message: 'Invalid email or password' });

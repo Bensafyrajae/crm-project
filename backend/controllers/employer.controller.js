@@ -109,25 +109,27 @@ export const deleteManager = async (req, res) => {
   try {
     const manager = await User.findById(req.params.managerId);
 
-    if (manager) {
-      // Check if manager has any leads assigned
-      const leadsCount = await Lead.countDocuments({ manager: manager._id });
-      
-      if (leadsCount > 0) {
-        return res.status(400).json({ 
-          message: 'Cannot delete manager with assigned leads. Reassign leads first.' 
-        });
-      }
-      
-      await manager.remove();
-      res.json({ message: 'Manager removed' });
-    } else {
-      res.status(404).json({ message: 'Manager not found' });
+    if (!manager) {
+      return res.status(404).json({ message: 'Manager not found' });
     }
+
+    // Check if manager has any leads assigned
+    const leadsCount = await Lead.countDocuments({ manager: manager._id });
+
+    if (leadsCount > 0) {
+      return res.status(400).json({
+        message: 'Cannot delete manager with assigned leads. Reassign leads first.',
+      });
+    }
+
+    await User.findByIdAndDelete(req.params.managerId);
+
+    res.json({ message: 'Manager removed' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // @desc    Get all leads
 // @route   GET /api/employer/leads
