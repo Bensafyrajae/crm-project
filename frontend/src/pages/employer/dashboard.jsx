@@ -3,12 +3,13 @@ import DashboardLayout from "../../components/layout/dashboard-layout"
 import { CheckCircle, XCircle, Clock, TrendingUp, Users, FileText, ArrowUp, ArrowDown } from "lucide-react"
 import axiosInstance from '../../api/axiosInstance';
 
+// StatCard Component
 const StatCard = ({ title, value, icon, color, gradient, trend }) => {
   return (
     <div className="relative group">
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl blur opacity-25 group-hover:opacity-30 transition-all duration-300"></div>
-      <div className="relative overflow-hidden bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300">
-        <div className="absolute inset-0 bg-gradient-to-br opacity-[0.03]" style={{ background: gradient }} />
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl blur-md opacity-20 group-hover:opacity-30 transition-all duration-300"></div>
+      <div className="relative overflow-hidden bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300">
+        <div className="absolute inset-0 bg-gradient-to-br opacity-[0.05]" style={{ background: gradient }} />
         <div className="p-6">
           <div className="flex items-center justify-between">
             <div className={`flex-shrink-0 rounded-xl p-3 ${color} bg-opacity-10`}>
@@ -24,7 +25,7 @@ const StatCard = ({ title, value, icon, color, gradient, trend }) => {
             )}
           </div>
           <div className="mt-4">
-            <h3 className="text-4xl font-bold text-gray-900">{value}</h3>
+            <h3 className="text-4xl font-extrabold text-gray-900">{value}</h3>
             <p className="mt-2 text-sm font-medium text-gray-600">{title}</p>
           </div>
         </div>
@@ -33,33 +34,93 @@ const StatCard = ({ title, value, icon, color, gradient, trend }) => {
   )
 }
 
-const ActivityItem = ({ icon, title, subtitle, time, status }) => (
-  <li className="hover:bg-gray-50/50 transition-all duration-200">
-    <div className="px-6 py-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
-            {icon}
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-gray-900">{title}</p>
-            <p className="mt-1 text-xs text-gray-500">{subtitle}</p>
-          </div>
+// ActivityItem Component
+const ActivityItem = ({ title, percentage, color }) => (
+  <div className="flex flex-col items-center space-y-4">
+    {/* Cercle statistique */}
+    <div className="relative w-24 h-24">
+      <div
+        className={`absolute inset-0 rounded-full border-8 ${color} border-opacity-30`}
+      ></div>
+      <div
+        className={`absolute inset-0 rounded-full border-8 ${color} border-t-transparent animate-spin`}
+        style={{
+          transform: `rotate(${(percentage / 100) * 360}deg)`,
+        }}
+      ></div>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-lg font-semibold text-gray-900">{percentage}%</span>
+      </div>
+    </div>
+    {/* Titre */}
+    <p className="text-sm font-medium text-gray-700">{title}</p>
+  </div>
+);
+
+// OverallStatsCircle Component
+const OverallStatsCircle = ({ stats }) => {
+  const total = stats.leadsInProgress + stats.leadsCompleted + stats.leadsCanceled;
+
+  const progressInProgress = (stats.leadsInProgress / total) * 100;
+  const progressCompleted = (stats.leadsCompleted / total) * 100;
+  const progressCanceled = (stats.leadsCanceled / total) * 100;
+
+  return (
+    <div className="flex flex-col items-center space-y-4">
+      {/* Cercle statistique global */}
+      <div className="relative w-48 h-48">
+        {/* Cercle de base */}
+        <div className="absolute inset-0 rounded-full border-8 border-gray-200"></div>
+
+        {/* Segment "Leads in Progress" */}
+        <div
+          className="absolute inset-0 rounded-full border-8 border-blue-500 border-t-transparent"
+          style={{
+            transform: `rotate(${(progressInProgress / 100) * 360}deg)`,
+          }}
+        ></div>
+
+        {/* Segment "Leads Completed" */}
+        <div
+          className="absolute inset-0 rounded-full border-8 border-emerald-500 border-t-transparent"
+          style={{
+            transform: `rotate(${(progressCompleted / 100) * 360 + (progressInProgress / 100) * 360}deg)`,
+          }}
+        ></div>
+
+        {/* Segment "Leads Canceled" */}
+        <div
+          className="absolute inset-0 rounded-full border-8 border-rose-500 border-t-transparent"
+          style={{
+            transform: `rotate(${(progressCanceled / 100) * 360 + (progressCompleted / 100) * 360 + (progressInProgress / 100) * 360}deg)`,
+          }}
+        ></div>
+
+        {/* Texte au centre */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <h3 className="text-lg font-semibold text-gray-900">Total</h3>
+          <p className="text-2xl font-extrabold text-gray-900">{total}</p>
         </div>
-        <div className="flex items-center space-x-4">
-          <span className={`px-3 py-1 text-xs font-medium rounded-full ${
-            status === 'New' ? 'text-emerald-700 bg-emerald-50' :
-            status === 'Pending' ? 'text-amber-700 bg-amber-50' :
-            'text-blue-700 bg-blue-50'
-          }`}>
-            {status}
-          </span>
-          <time className="text-xs text-gray-500 whitespace-nowrap">{time}</time>
+      </div>
+
+      {/* Légende */}
+      <div className="flex space-x-4">
+        <div className="flex items-center space-x-2">
+          <span className="w-4 h-4 rounded-full bg-blue-500"></span>
+          <span className="text-sm text-gray-700">In Progress</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="w-4 h-4 rounded-full bg-emerald-500"></span>
+          <span className="text-sm text-gray-700">Completed</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="w-4 h-4 rounded-full bg-rose-500"></span>
+          <span className="text-sm text-gray-700">Canceled</span>
         </div>
       </div>
     </div>
-  </li>
-)
+  );
+};
 
 const EmployerDashboard = () => {
   const [stats, setStats] = useState({
@@ -126,9 +187,10 @@ const EmployerDashboard = () => {
   return (
     <DashboardLayout userRole="employer">
       <div className="space-y-8">
+        {/* Dashboard Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <h2 className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               Dashboard Overview
             </h2>
             <p className="mt-2 text-gray-600">Track your business metrics and activity</p>
@@ -171,6 +233,10 @@ const EmployerDashboard = () => {
         </div>
 
         <div className="mt-12">
+          <OverallStatsCircle stats={stats} />
+        </div>
+
+        <div className="mt-12">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-semibold text-gray-900">Recent Activity</h3>
             <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
@@ -180,25 +246,19 @@ const EmployerDashboard = () => {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <ul className="divide-y divide-gray-100">
               <ActivityItem
-                icon={<Users className="w-6 h-6 text-blue-600" />}
                 title="New Lead Assignment"
-                subtitle="Sarah Wilson assigned to Project X"
-                time="2 hours ago"
-                status="New"
+                percentage={75}
+                color="border-blue-600"
               />
               <ActivityItem
-                icon={<CheckCircle className="w-6 h-6 text-emerald-600" />}
                 title="Lead Completed"
-                subtitle="Marketing Campaign for ABC Corp"
-                time="5 hours ago"
-                status="Completed"
+                percentage={100}
+                color="border-emerald-600"
               />
               <ActivityItem
-                icon={<Clock className="w-6 h-6 text-amber-600" />}
                 title="Follow-up Required"
-                subtitle="Client meeting scheduled for Tech Solutions"
-                time="1 day ago"
-                status="Pending"
+                percentage={50}
+                color="border-amber-600"
               />
             </ul>
           </div>

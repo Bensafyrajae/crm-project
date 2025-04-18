@@ -45,11 +45,11 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 bg-white p-6 rounded-lg shadow-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-lg shadow-lg">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Connexion</h1>
+          <h1 className="text-3xl font-extrabold text-gray-900">Connexion</h1>
           <p className="mt-2 text-sm text-gray-600">Entrez vos identifiants pour accéder à votre compte</p>
         </div>
 
@@ -57,8 +57,8 @@ const Login = () => {
         <form onSubmit={login} className="mt-8 space-y-6">
           {/* General Error */}
           {errors.general && (
-            <div className="flex items-center p-4 text-sm text-red-800 rounded-lg bg-red-50">
-              <AlertCircle className="flex-shrink-0 w-4 h-4 mr-2" />
+            <div className="flex items-center p-4 text-sm text-red-800 rounded-lg bg-red-100">
+              <AlertCircle className="flex-shrink-0 w-5 h-5 mr-2" />
               <span>{errors.general}</span>
             </div>
           )}
@@ -120,13 +120,12 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed transition duration-150 ease-in-out"
             >
               {isLoading ? "Connexion en cours..." : "Se connecter"}
             </button>
           </div>
         </form>
-
       </div>
     </div>
   )
